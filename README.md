@@ -1,3 +1,3 @@
 # mostimproved
 
-a series of line charts (chart.js) using loop in Jinja, to loop over a dummy data array
+a series of line charts (chart.js) displaying individual customer experience scores over time
