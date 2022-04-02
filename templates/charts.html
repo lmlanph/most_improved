@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>movers</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- {{tmp1}} -->
+    <!-- {{tmp2}} -->
+
+    <div id="loading-spinner" class="loading"></div>
+
+    <header>
+
+      <!-- form tag allows Flask request to grab params as keys -->
+      <form action="{{ url_for('charts') }}" method="POST">
+
+        <div class="flex-container-radio">
+
+          <div class="radio-flex">
+             <img id="logo" src="{{ url_for('static',filename='m_logo.png') }}">
+          </div>
+
+          <div class="radio-flex">
+            <input type="radio" id="first" name="deltacalc" value="first" checked>
+            <label for="first">First</label><br>
+            <input type="radio" id="average" name="deltacalc" value="avg">
+            <label for="average">Average</label><br>
+          </div>
+
+          <div class="radio-flex">
+            <input type="radio" id="recent" name="recent" value="rec" checked>
+            <label for="recent">Recent</label><br>
+            <input type="radio" id="anytime" name="recent" value="notrec">
+            <label for="anytime">Any Time</label><br>
+          </div>
+
+          <div class="radio-flex">
+            <input type="radio" id="5" name="count" value='5' checked>
+            <label for="5">5</label><br>
+            <input type="radio" id="15" name="count" value='15'>
+            <label for="15">15</label><br>
+            <input type="radio" id="30" name="count" value='30'>
+            <label for="30">30</label><br>
+          </div>
+
+          <div class="radio-flex">
+            <button id="btn_submit" class="btn_sub" type="submit">Update</button>
+          </div>
+
+        </div>
+        
+      </form>
+
+    </header>
+
+    <br><br>
+
+
+    <div id="modal-parent" class="modal modal-hidden">
+
+      <div class="modal-contents">
+        <div class="modal-header">
+          <div class="modal-name">First Last</div>
+          <img id="link" src="{{ url_for('static',filename='link.png') }}">
+          <img class="modal-close" src="{{ url_for('static',filename='x.png') }}">
+        </div>
+        <div>
+          <p class="modal-text">replace</p><br>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="center-col">
+
+      <!-- render charts and place divs for beginning of list -->
+
+      {% for i in data_start %}
+      <div class="flex-container" onclick="renderComment(this)"</div>
+        <div class="chart-card">
+          <canvas id="myChartStart{{ loop.index0 }}" class='chart-start' width="450" height="130"></canvas>
+          <!-- comment list, display:none -->
+          <!-- figure out how to add these to data-* attributes instead -->
+          <p class="hidden-comment">{{ data_start[loop.index0].comment|tojson }}</p>
+          <p class="hidden-score">{{ data_start[loop.index0].score|tojson }}</p>
+          <p class="hidden-date">{{ data_start[loop.index0].date|tojson }}</p>
+          <p class="hidden-name">{{ data_start[loop.index0].first}} {{ data_start[loop.index0].last}}</p>
+          <p class="hidden-email">{{ data_start[loop.index0].email}}</p>
+        </div>
+        <div class="text-card">
+          <img src="{{ url_for('static',filename='upArrow.png') }}">
+          <p class="maintext1">{{ data_start[loop.index0].first}} {{ data_start[loop.index0].last}}</p>
+          <!-- <p class='subtext1'>{{ data_start[loop.index0].email}}</p> -->
+          <p class='subtext1'>{{ data_start[loop.index0].club}}</p>
+        </div>
+      </div>
+      {% endfor %}
+
+      <br>
+      <p id="ellipsis">{ ... }</p>
+      <br>
+
+
+      <!-- render cards and place divs for end of list -->
+
+      {% for i in data_end %}
+      <div class="flex-container" onclick="renderComment(this)">
+        <div class="chart-card">
+          <canvas id="myChartEnd{{ loop.index0 }}" class='chart-end' width="450" height="130"></canvas>
+          <!-- comment list, display:none -->
+          <p class="hidden-comment">{{ data_end[loop.index0].comment|tojson }}</p>
+          <p class="hidden-score">{{ data_end[loop.index0].score|tojson }}</p>
+          <p class="hidden-date">{{ data_end[loop.index0].date|tojson }}</p>
+          <p class="hidden-name">{{ data_end[loop.index0].first}} {{ data_end[loop.index0].last}}</p>
+          <p class="hidden-email">{{ data_end[loop.index0].email}}</p>
+        </div>
+        <div class="text-card">
+          <img src="{{ url_for('static',filename='downArrow.png') }}">
+          <p class="maintext1">{{ data_end[loop.index0].first}} {{ data_end[loop.index0].last}}</p>
+          <!-- <p class='subtext1'>{{ data_end[loop.index0].email}}</p> -->
+          <p class='subtext1'>{{ data_end[loop.index0].club}}</p>
+        </div>
+      </div>
+      {% endfor %}
+
+      <br><br><br><br>
+
+    </div>
+
+
+  <script>
+
+
+    // get radio values from localStorage and set radios as previously checked
+
+    var radiosDeltacalc = document.getElementsByName("deltacalc"); // list of radio buttons
+    var val = localStorage.getItem('deltacalc'); // local storage value
+    for(var i=0;i<radiosDeltacalc.length;i++){
+      if(radiosDeltacalc[i].value == val){
+          radiosDeltacalc[i].checked = true; // marking the required radio as checked
+      }
+    }
+    var radiosRecent = document.getElementsByName("recent"); // list of radio buttons
+    var val = localStorage.getItem('recent'); // local storage value
+    for(var i=0;i<radiosRecent.length;i++){
+      if(radiosRecent[i].value == val){
+          radiosRecent[i].checked = true; // marking the required radio as checked
+      }
+    }
+    var radiosCount = document.getElementsByName("count"); // list of radio buttons
+    var val = localStorage.getItem('count'); // local storage value
+    for(var i=0;i<radiosCount.length;i++){
+      if(radiosCount[i].value == val){
+          radiosCount[i].checked = true; // marking the required radio as checked
+      }
+    }
+
+
+    // reset radios with logo click (page refresh, reset localstorage)
+
+    document.getElementById("logo").addEventListener("click", function(){
+
+            // trigger loading anim
+            load.classList.toggle('loading-hidden');
+
+            document.location.href = '{{ url_for( "charts" ) }}';
+
+            // reset
+            localStorage.setItem('deltacalc', 'first');
+            localStorage.setItem('recent', 'recent');
+            localStorage.setItem('count', '5');
+
+          });
+
+    // get today's date for chart max date
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+    today = yyyy + '-' + mm + '-' + dd;
+
+
+    // loop through chart data
+
+    // data_start list
+
+    {% for i in data_start %}
+
+    const dataStart{{ loop.index0 }} = {
+      datasets: [{
+        backgroundColor: 'rgb(134, 204, 120)',
+        borderColor: 'rgb(134, 204, 120, .45)',
+        data: {{ data_start[loop.index0].chartScores | safe }}
+      }]
+    };
+
+    const configStart{{ loop.index0 }} = {
+      type: 'line',
+      data: dataStart{{ loop.index0 }},
+      options: {
+        plugins: {
+          legend: {
+            display: false
+            }
+        },
+        scales: {
+          x: {
+            offset: true,
+            ticks: {
+              display: false
+            },
+            parsing: false,
+            type: 'time',
+            min: '{{ min_date_string }}',
+            max: today,
+            time: {
+              unit: 'year'
+            }
+          },
+          y: {
+            offset: true,
+            beginAtZero: true,
+            min: 0,
+            max: 10
+          }
+        },
+        responsive: false
+      }
+    };
+
+    var myChartStart{{ loop.index0 }} = new Chart(
+        document.getElementById('myChartStart{{ loop.index0 }}'),
+        configStart{{ loop.index0 }}
+      );
+    {% endfor %}
+
+
+    //data_end list
+
+    {% for i in data_end %}
+
+    const dataEnd{{ loop.index0 }} = {
+      datasets: [{
+        backgroundColor: 'rgb(255, 177, 66)',
+        borderColor: 'rgb(255, 201, 125, .45)',
+        data: {{ data_end[loop.index0].chartScores | safe }}
+      }]
+    };
+
+    const configEnd{{ loop.index0 }} = {
+      type: 'line',
+      data: dataEnd{{ loop.index0 }},
+      options: {
+        plugins: {
+          legend: {
+            display: false
+            }
+        },
+        scales: {
+          x: {
+            offset: true,
+            ticks: {
+              display: false
+            },
+            parsing: false,
+            type: 'time',
+            min: '{{ min_date_string }}',
+            max: today,
+            time: {
+              unit: 'year'
+            }
+          },
+          y: {
+            offset: true,
+            beginAtZero: true,
+            min: 0,
+            max: 10
+          }
+        },
+        responsive: false
+      }
+    };
+
+    var myChartEnd{{ loop.index0 }} = new Chart(
+        document.getElementById('myChartEnd{{ loop.index0 }}'),
+        configEnd{{ loop.index0 }}
+      );
+    {% endfor %}
+
+
+    // modal content
+
+    function renderComment(t){
+
+      var comment = t.querySelector('.hidden-comment').innerHTML;
+      var score = t.querySelector('.hidden-score').innerHTML;
+      var date = t.querySelector('.hidden-date').innerHTML;
+      var name = t.querySelector('.hidden-name').innerHTML;
+      var email = t.querySelector('.hidden-email').innerHTML;
+
+      var c = JSON.parse(comment)
+      var length = c.length;
+
+      var modalDiv = document.querySelector('.modal-text');
+      let commentVar;
+      let modalCommentClass;
+
+
+      // link to Med for resp det's
+
+      // get email to pass as query
+      // var split_mail = email.split('@')
+
+      // see _archive dir for actual URL
+      // var urlMed = "www.google.com" + split_mail[0] + "%40" + split_mail[1]
+      // need to figure out an 'all time' timeperiod here
+      // var tp = "&f.timeperiod=70405"
+      // grab hidden name for header, and add href
+      // document.querySelector('.modal-name').innerHTML = '<a href=' + urlMed + tp + ' target="blank">' + name + '</a>';
+
+
+      // show modal
+
+      // I think removing the class here would also work
+      // toggle might not be appropriate...
+      document.querySelector('.modal').classList.toggle('modal-hidden');
+
+      // clear innerHTML before clicking next card
+      document.querySelector('.modal-text').innerHTML = '';
+
+      // scroll to top of modal, each new click
+      modalDiv.scrollTo(0,0);
+
+
+
+      // loop through elements and append to innerHTML
+      for (var i = 0; i < length; i++) {
+
+        // choose color based on score
+        if (JSON.parse(score)[i] > 8) {
+          modScoreClass = 'modal-score-prom'
+        } 
+        else if (JSON.parse(score)[i] > 6) {
+          modScoreClass = 'modal-score-pass'
+        }
+        else {
+          modScoreClass = 'modal-score-detr'
+        }
+
+        // style comment
+        if (JSON.parse(comment)[i] == null) {
+          commentVar = 'no comment provided';
+          modalCommentClass = 'subtext1';
+        } else {
+          commentVar = JSON.parse(comment)[i];
+          modalCommentClass = 'modal-comment';
+        }
+
+        // render inner html loop
+        modalDiv.innerHTML = modalDiv.innerHTML + "<div class=" + modScoreClass + ">" + JSON.parse(score)[i] + "</div>" + "<div class='modal-date'>" +JSON.parse(date)[i] + "</div>" + "<div class=" + modalCommentClass + ">"+ commentVar + "</div>" + "<br>" + "<br>"
+      }
+    };
+
+
+    // close modal with "x"
+    document.querySelector('.modal-close').addEventListener('click', closeModal);
+
+    // close modal with esc
+    window.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // not sure how this works, but added ID to parent div called "modal-parent"...
+    // then target vs currentTarget seems to separate the outer from the inner contents?
+
+    // close modal when shown
+    document.getElementById("modal-parent").addEventListener('click', function(event) {
+      if(event.target == event.currentTarget) {
+        closeModal();
+      }
+    });
+
+    // close modal func
+    function closeModal(){
+      document.querySelector('.modal').classList.add('modal-hidden')
+    };
+
+
+
+    // kill loading spinner anim on load
+
+    var load = document.getElementById("loading-spinner")
+
+    window.addEventListener("load", function(){
+      load.classList.add('loading-hidden');
+    });
+    
+
+
+    // listen for submit button and assign radio values to localstorage
+
+    document.getElementById("btn_submit").addEventListener("click", function(){
+
+        // trigger loading anim
+        load.classList.toggle('loading-hidden');
+
+        var radiosDeltacalc = document.getElementsByName('deltacalc');
+        var valueDeltacalc;
+        for (var i = 0; i < radiosDeltacalc.length; i++) {
+            if (radiosDeltacalc[i].type === 'radio' && radiosDeltacalc[i].checked) {
+                // get value, set checked flag or do whatever you need to
+                valueDeltacalc = radiosDeltacalc[i].value;       
+            }
+        }
+        var radiosRecent = document.getElementsByName('recent');
+        var valueRecent;
+        for (var i = 0; i < radiosRecent.length; i++) {
+            if (radiosRecent[i].type === 'radio' && radiosRecent[i].checked) {
+                // get value, set checked flag or do whatever you need to
+                valueRecent = radiosRecent[i].value;       
+            }
+        }
+        var radiosCount = document.getElementsByName('count');
+        var valueCount;
+        for (var i = 0; i < radiosCount.length; i++) {
+            if (radiosCount[i].type === 'radio' && radiosCount[i].checked) {
+                // get value, set checked flag or do whatever you need to
+                valueCount = radiosCount[i].value;       
+            }
+        }
+        localStorage.setItem('deltacalc', valueDeltacalc);
+        localStorage.setItem('recent', valueRecent);
+        localStorage.setItem('count', valueCount);
+    });
+
+  </script>
+
+  </body>
+</html>

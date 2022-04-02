@@ -1,0 +1,290 @@
+/* Remove default margin padding */
+* {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: #ababab;
+}
+
+body {
+  background-color: white;
+  font-family: Nunito Sans, sans-serif;
+  /*text-align: center;*/
+  color: #474747;
+}
+
+canvas {
+  background-color: white;
+  display: block;
+}
+
+header {
+  background-color: #dbdbdb;
+  display: block;
+  padding: 0px 55 0px 0px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: Nunito Sans;
+  line-height: 2;
+  padding: 2px 30px 0px;
+  text-align: center;
+  border-radius: 3px;
+  border: 0;
+  background-color: #fafafa;
+}
+
+button:hover,
+button:focus {
+  color: #5b47cc;
+}
+
+#center-col {
+  width: 720px;
+  margin: auto;
+}
+
+#ellipsis {
+  color:  #c4c4c4;
+  font-size: 26px;
+  text-align: center;
+}
+
+#title-movers {
+  font-size: 32px;
+  color: gray;
+}
+
+#title {
+  margin: 5px 0px 67px 150px;
+}
+
+#logo {
+  cursor: pointer;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  transition: all .3s ease-in;
+}
+.loading::after {
+  position: fixed;
+  top: 50%;
+  content: "";
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 10px solid rgba(219, 219, 219, .8);
+  border-top-color: darkgray;
+  animation: loading .9s ease-in-out infinite;
+
+}
+.loading-hidden {
+  opacity: 0;
+}
+
+@keyframes loading {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.maintext1 {
+  font-size: 19px;
+  margin-top: 6px;
+  padding: 10px 0px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.subtext1 {
+  font-size: 13px;
+  padding: 5px 0px;
+  color:  #939393;
+  line-height: 16px;
+}
+
+/*radio*/
+
+label {
+  /*margin-right: 15px;*/
+}
+
+input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  cursor: pointer;
+
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+
+  border: 2px solid #999;
+  transition: 0.1s all linear;
+  margin-right: 5px;
+
+  position: relative;
+  top: 4px;
+}
+
+input:checked {
+  border: 5px solid #5b47cc;
+}
+
+
+/*radio flex*/
+
+.flex-container-radio {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: 0px 180px;
+  align-self: center;
+}
+
+.radio-flex {
+  margin: 22px 0px;
+  text-align: left;
+  padding: 3px 12px;
+  width: 100px;
+}
+
+.radio-flex:nth-child(1) {
+  margin-right: auto;
+  margin-left: 50px;
+
+}
+
+
+
+/*charts*/
+
+.flex-container {
+  cursor: pointer;
+  display: flex;
+  margin: 16px;
+  /*padding: 8px;*/
+  height: 130px;
+  border-radius: 14px;
+  outline: 2px solid #d9d9d9;
+  border: 1px solid transparent; 
+  transition: all .1s ease-in;
+}
+
+.flex-container:hover {
+  border: 1px solid #d0d0d0;  
+}
+
+
+
+.text-card {
+  order: 1;
+  width: 200px;
+  text-align: right;
+  line-height: 5px;
+  margin: 14px;  
+}
+
+.chart-card {
+  order: 2;
+}
+.hidden-comment, .hidden-score, .hidden-date, .hidden-name, .hidden-email {
+  display: none;
+}
+
+
+/*modal*/
+
+.modal {
+  background-color: rgba(0, 0, 0, .3);
+  position: fixed;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all .3s cubic-bezier(0.32, 0, 0.27, 1);
+}
+.modal-hidden {
+  /*transform: translateX(1750px);*/
+  opacity: 0;
+  transform: scale(1.1);
+  pointer-events: none;
+  /*z-index: -10;*/
+}
+.modal-contents {
+  border-radius: 12px;
+  background-color: white;
+  padding: 2rem 4rem;
+  width: 400px;
+  max-height: 650px;
+  overflow: auto;
+}
+.modal-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 12px 0 30px;
+}
+.modal-header > *:nth-child(3) {
+  margin-left: auto;
+}
+.modal-name {
+  font-size: 26px;
+  color: #ababab;
+  margin-right: 12px;
+  cursor: pointer;
+}
+.modal-score-prom {
+  font-size: 32px;
+  color: #89b582;
+  margin-bottom: 12px;
+}
+.modal-score-detr {
+  font-size: 32px;
+  color: #e6925a;
+  margin-bottom: 12px;
+}
+.modal-score-pass {
+  font-size: 32px;
+  color: #ababab;
+  margin-bottom: 10px;
+}
+.modal-date {
+  color:  #939393;
+  font-size: 13px;
+  margin: 0 0 3px;
+}
+.modal-comment {
+  font-size: 18px;
+  color: #2e2e2e;
+}
+.modal-close {
+  cursor: pointer;
+  /*font-size: 26px;*/
+  color: #ababab;
+  width: 18px;
+  height: 18px;
+}
+
+#link {
+  width: 18px;
+  height: 18px;
+  opacity: 0;
+  transition: all .2s ease-in;
+  /*cursor: pointer;*/
+}
+/*target sibling on hover*/
+.modal-name:hover + #link {
+  opacity: 1;
+}
+
